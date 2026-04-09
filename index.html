@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>领取邀请函</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", Arial, sans-serif;
+      background: #f5f6fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .box {
+      width: 90%;
+      max-width: 400px;
+      background: #fff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      height: 44px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      padding: 0 12px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      height: 44px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .msg {
+      margin-top: 12px;
+      font-size: 14px;
+      color: red;
+    }
+
+    .success {
+      color: #0a7a35;
+    }
+
+    .result {
+      margin-top: 20px;
+      display: none;
+    }
+
+    img {
+      width: 100%;
+      border-radius: 12px;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h1>领取专属邀请函</h1>
+  <p>输入 500px 用户名 + 手机号后四位</p>
+
+  <input id="username" placeholder="请输入用户名">
+  <input id="phone" placeholder="手机号后4位" maxlength="4">
+
+  <button onclick="search()">立即领取</button>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="result" id="result">
+    <img id="img" alt="邀请函">
+    <p>长按保存邀请函</p>
+  </div>
+</div>
+
+<script>
+  // 👉 在这里维护名单
+  const data = [
+    { username: "xiaorong", phone: "1234" },
+    { username: "zhangsan", phone: "5678" },
+    { username: "王红", phone: "1234" },
+    { username: "李四", phone: "1234" },
+    { username: "wang", phone: "1234" }
+  ];
+
+  function search() {
+    const username = document.getElementById("username").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const msg = document.getElementById("msg");
+    const result = document.getElementById("result");
+    const img = document.getElementById("img");
+
+    msg.innerText = "";
+    msg.className = "msg";
+    result.style.display = "none";
+
+    // 校验输入
+    if (!username || phone.length !== 4) {
+      msg.innerText = "请输入正确的信息";
+      return;
+    }
+
+    // 查找用户（关键优化点）
+    const user = data.find(item =>
+      String(item.username).trim() === username &&
+      String(item.phone).trim() === phone
+    );
+
+    if (!user) {
+      msg.innerText = "未找到邀请函，请核对信息";
+      return;
+    }
+
+    // 图片路径
+    const path = "./invites/" + user.username + ".jpg";
+
+    // 图片加载失败
+    img.onerror = function () {
+      msg.innerText = "已匹配用户，但图片不存在，请检查文件名";
+      result.style.display = "none";
+    };
+
+    // 图片加载成功
+    img.onload = function () {
+      msg.innerText = "领取成功";
+      msg.className = "msg success";
+      result.style.display = "block";
+    };
+
+    img.src = path;
+  }
+</script>
+
+</body>
+</html>
