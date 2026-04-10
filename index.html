@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>500px邀请函领取</title>
+  <style>
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif;
+      background:#f5f6fa;
+      display:flex;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .box{
+      width:100%;
+      max-width:420px;
+      background:#fff;
+      border-radius:16px;
+      padding:24px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .title{
+      font-size:22px;
+      font-weight:700;
+      text-align:center;
+      line-height:1.5;
+      margin-bottom:12px;
+    }
+
+    .tips{
+      font-size:12px;
+      color:#999;
+      text-align:center;
+      margin-bottom:14px;
+      line-height:1.6;
+    }
+
+    input{
+      width:100%;
+      height:44px;
+      border:1px solid #ddd;
+      border-radius:10px;
+      padding:0 12px;
+      margin-bottom:12px;
+      font-size:14px;
+      box-sizing:border-box;
+    }
+
+    button{
+      width:100%;
+      height:46px;
+      background:#000;
+      color:#fff;
+      border:none;
+      border-radius:10px;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    .msg{
+      text-align:center;
+      margin-top:12px;
+      color:#d93025;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .result{
+      display:none;
+      margin-top:16px;
+    }
+
+    .result img{
+      width:100%;
+      border-radius:12px;
+      display:block;
+    }
+
+    .save-tip{
+      font-size:12px;
+      color:#999;
+      text-align:center;
+      margin-top:10px;
+      line-height:1.5;
+    }
+
+    .loading{
+      position:fixed;
+      inset:0;
+      background:rgba(255,255,255,0.92);
+      display:none;
+      justify-content:center;
+      align-items:center;
+      flex-direction:column;
+      z-index:9999;
+    }
+
+    .spinner{
+      width:40px;
+      height:40px;
+      border:4px solid #ddd;
+      border-top:4px solid #000;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin-bottom:10px;
+    }
+
+    .loading p{
+      margin:0;
+      font-size:14px;
+      color:#333;
+    }
+
+    @keyframes spin{
+      to{transform:rotate(360deg);}
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <div class="title">
+    视觉中国500px视觉盛典深圳站<br>
+    领取专属邀请函
+  </div>
+
+  <div class="tips">
+    已提交报名的用户，邀请函数据将于12小时内同步更新<br>
+    如暂未查询到，请稍后再次尝试
+  </div>
+
+  <input id="username" placeholder="请输入500px用户名">
+  <input id="phone" placeholder="手机号后四位" maxlength="4" inputmode="numeric">
+
+  <button id="generateBtn" onclick="generate()">立即生成邀请函</button>
+
+  <div id="msg" class="msg"></div>
+
+  <div id="result" class="result">
+    <img id="img" alt="邀请函">
+    <p class="save-tip">长按图片即可保存到手机</p>
+  </div>
+</div>
+
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  <p>正在生成邀请函...</p>
+</div>
+
+<script src="./data.js"></script>
+<script>
+function generate() {
+  const username = document.getElementById("username").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const msg = document.getElementById("msg");
+  const loading = document.getElementById("loading");
+  const button = document.getElementById("generateBtn");
+
+  msg.innerHTML = "";
+
+  if (!username || phone.length !== 4) {
+    msg.innerText = "请输入正确的信息";
+    return;
+  }
+
+  const user = data.find(item =>
+    item.username === username && item.phoneLast4 === phone
+  );
+
+  if (!user) {
+    msg.innerHTML = `
+      暂未查询到您的邀请函<br>
+      <span style="font-size:12px;color:#999;">
+      如您已完成报名，数据将在12小时内同步，请稍后再次尝试
+      </span>
+    `;
+    return;
+  }
+
+  loading.style.display = "flex";
+  button.disabled = true;
+  button.innerText = "生成中...";
+
+  const img = new Image();
+  img.src = "invitation-bg.jpg";
+
+  img.onload = function() {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    ctx.drawImage(img, 0, 0);
+
+    const centerX = canvas.width / 2;
+    const nameY = canvas.height * 0.28;
+
+    const maxTextWidth = canvas.width * 0.52;
+    let fontSize = canvas.width * 0.07;
+    const minFontSize = canvas.width * 0.035;
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#ffffff";
+
+    while (fontSize > minFontSize) {
+      ctx.font = `700 ${fontSize}px "PingFang SC", "Microsoft YaHei", sans-serif`;
+      const textWidth = ctx.measureText(username).width;
+      if (textWidth <= maxTextWidth) {
+        break;
+      }
+      fontSize -= 4;
+    }
+
+    ctx.shadowColor = "rgba(0,0,0,0.22)";
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+
+    ctx.fillText(username, centerX, nameY);
+
+    ctx.lineWidth = Math.max(2, fontSize * 0.035);
+    ctx.strokeStyle = "rgba(255,255,255,0.22)";
+    ctx.strokeText(username, centerX, nameY);
+
+    const base64 = canvas.toDataURL("image/jpeg", 0.95);
+
+    document.getElementById("img").src = base64;
+    document.getElementById("result").style.display = "block";
+
+    loading.style.display = "none";
+    button.disabled = false;
+    button.innerText = "立即生成邀请函";
+  };
+
+  img.onerror = function() {
+    loading.style.display = "none";
+    button.disabled = false;
+    button.innerText = "立即生成邀请函";
+    msg.innerText = "底图加载失败，请检查 invitation-bg.jpg";
+  };
+}
+</script>
+
+</body>
+</html>
