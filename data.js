@@ -497,7 +497,5 @@ const data = [
   { username: "庄爱东", phoneLast4: "2071" },
   { username: "冰淇淋精灵", phoneLast4: "3917" },
   { username: "杨英杰", phoneLast4: "6298" },
-  { username: "摄影师何子毅", phoneLast4: "2008" }
-]
-  
+  { username: "摄影师何子毅", phoneLast4: "2008" } 
 ];
