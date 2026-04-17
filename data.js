@@ -702,5 +702,6 @@ const data = [
   { username: "不紧张", phoneLast4: "0000" },
   { username: "张露月", phoneLast4: "0000" },
   { username: "何可人", phoneLast4: "0000" },
-  { username: "李贝贝", phoneLast4: "0000" }
+  { username: "李贝贝", phoneLast4: "0000" },
+  { username: "Samantha", phoneLast4: "0000" }
 ];
